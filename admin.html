@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Кабинет владельца</title>
+<meta name="theme-color" content="#121416">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Owner panel for the rental list. Same graphite/yellow look as the public site; built for a phone first. */
+:root{
+  --bg:#121416;--s1:#1a1d20;--s2:#22262a;--line:#2e3338;
+  --ink:#f2f2ee;--muted:#9aa3aa;--accent:#f5b301;--accent-ink:#141414;
+  --good:#47c27a;--warn:#f5b301;--bad:#ff7a6b;
+  --display:"Oswald","Arial Narrow",Impact,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--accent)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+h1,h2{font-family:var(--display);text-transform:uppercase;letter-spacing:.01em;line-height:1.1}
+.stripes{height:8px;background:repeating-linear-gradient(-45deg,var(--accent) 0 12px,#141414 12px 24px)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;text-decoration:none;font:800 14.5px var(--body);padding:13px 18px;border-radius:12px;background:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:var(--s2);color:var(--ink)}
+.btn.danger{background:transparent;color:var(--bad);box-shadow:inset 0 0 0 1.5px rgb(255 122 107 / .4)}
+.btn.sm{padding:9px 12px;font-size:13.5px;border-radius:10px}
+label{display:grid;gap:5px;font-size:12.5px;font-weight:700;color:var(--muted)}
+input,select,textarea{font:600 15.5px var(--body);color:var(--ink);background:var(--s2);border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;width:100%;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:62px}
+.muted{color:var(--muted)}
+.hide{display:none!important}
+
+/* login */
+.login{max-width:440px;margin:48px auto;padding:0 16px}
+.login .box{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:24px;display:grid;gap:14px}
+.login h1{font-size:30px}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--ink)}
+.check input{width:18px;height:18px;accent-color:var(--accent)}
+.err{color:var(--bad);font-weight:700;font-size:13.5px;min-height:1em}
+details{background:var(--s2);border-radius:12px;padding:12px 14px;font-size:13.5px}
+details summary{cursor:pointer;font-weight:800}
+details ol{margin:10px 0 0 18px;display:grid;gap:6px;color:#c8cdd1}
+
+/* panel */
+.top{position:sticky;top:0;z-index:10;background:rgb(18 20 22 / .94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;height:60px}
+.top h1{font-size:20px}
+.top h1 small{display:block;font:700 12px var(--body);color:var(--muted);text-transform:none;letter-spacing:0}
+.bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 14px}
+.bar .info{font-size:13.5px;color:var(--muted)}
+.bar .info b{color:var(--ink)}
+.summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.summary span{font-size:13px;font-weight:800;padding:6px 10px;border-radius:999px;background:var(--s1);border:1px solid var(--line)}
+.list{display:grid;gap:12px;padding-bottom:110px}
+.item{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px}
+.item.new{border-color:var(--accent)}
+.item .row{display:grid;gap:10px}
+@media(min-width:620px){.item .row.two{grid-template-columns:1fr 1fr}.item .row.three{grid-template-columns:1.2fr .8fr 1fr}}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{border:1.5px solid var(--line);background:var(--s2);color:var(--muted);font:800 13px var(--body);padding:10px 6px;border-radius:10px;cursor:pointer}
+.seg button[aria-pressed="true"].free{border-color:var(--good);color:var(--good);background:rgb(71 194 122 / .12)}
+.seg button[aria-pressed="true"].busy{border-color:var(--warn);color:var(--warn);background:rgb(245 179 1 / .12)}
+.seg button[aria-pressed="true"].repair{border-color:var(--bad);color:var(--bad);background:rgb(255 122 107 / .12)}
+.item .foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item .num{font:700 13px var(--body);color:var(--muted)}
+.empty{text-align:center;padding:40px 16px;border:1.5px dashed var(--line);border-radius:16px;color:var(--muted)}
+.save{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgb(26 29 32 / .97);border-top:1px solid var(--line);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px))}
+.save .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.save .state{font-size:13.5px;font-weight:700;color:var(--muted)}
+.save .state.dirty{color:var(--accent)}
+.save .state.ok{color:var(--good)}
+.save .state.bad{color:var(--bad)}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:30;background:var(--ink);color:var(--bg);font-weight:800;padding:11px 16px;border-radius:12px;max-width:calc(100% - 32px)}
+</style>
+</head>
+<body>
+<div class="stripes"></div>
+
+<!-- вход -->
+<div class="login" id="login">
+  <div class="box">
+    <div><h1>Кабинет владельца</h1><p class="muted" id="login-sub"></p></div>
+    <label>Ключ доступа (GitHub token)<input id="token" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+    <label class="check"><input type="checkbox" id="remember" checked>Запомнить на этом устройстве</label>
+    <div class="err" id="login-err" role="alert"></div>
+    <button class="btn" id="enter">Войти</button>
+    <button class="btn ghost" id="draft">Без ключа: черновик и скачивание файла</button>
+    <details>
+      <summary>Где взять ключ?</summary>
+      <ol>
+        <li>GitHub → фото профиля → <b>Settings</b> → <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b> → <b>Generate new token</b>.</li>
+        <li>Repository access: <b>Only select repositories</b> → выбрать репозиторий сайта.</li>
+        <li>Permissions → Repository permissions → <b>Contents: Read and write</b>.</li>
+        <li>Скопировать ключ и вставить сюда. Никому его не показывайте.</li>
+      </ol>
+    </details>
+  </div>
+</div>
+
+<!-- панель -->
+<div id="panel" class="hide">
+  <div class="top"><div class="wrap">
+    <h1 id="p-title"></h1>
+    <div style="display:flex;gap:8px"><a class="btn ghost sm" id="open-site" target="_blank" rel="noopener">Сайт ↗</a><button class="btn ghost sm" id="logout">Выйти</button></div>
+  </div></div>
+  <div class="wrap">
+    <div class="bar">
+      <div class="info" id="info"></div>
+      <button class="btn" id="add">+ Добавить технику</button>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div class="list" id="list"></div>
+  </div>
+  <div class="save"><div class="wrap">
+    <span class="state" id="state">Изменений нет</span>
+    <div style="display:flex;gap:8px"><button class="btn ghost sm hide" id="download">Скачать rent.json</button><button class="btn" id="publish" disabled>Сохранить на сайт</button></div>
+  </div></div>
+</div>
+
+<script>
+/* ================= НАСТРОЙКИ: репозиторий сайта ================= */
+var CFG={
+  company:'ЮТСД',
+  owner:'Seller72',            // логин GitHub, где лежит сайт
+  repo:'yutsd-demo',           // название репозитория
+  branch:'main',
+  path:'rent.json',            // файл со списком техники
+  site:'https://seller72.github.io/yutsd-demo/'
+};
+/* ================================================================= */
+
+var TYPES={trawl:'Трал',truck:'Грузовик / самосвал',crane:'Автокран',excavator:'Экскаватор',tow:'Эвакуатор / манипулятор',mixer:'Бетономешалка',trailer:'Прицеп',wrench:'Другое'};
+var UNITS=['за час','за смену','за сутки','за рейс','за км'];
+var STATUS=[['free','Свободна'],['busy','Занята'],['repair','На ремонте']];
+var API='https://api.github.com/repos/'+CFG.owner+'/'+CFG.repo+'/contents/'+CFG.path;
+var S={token:'',mode:'github',items:[],saved:'[]',sha:null,updated:null,busy:false};
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function store(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}
+function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function toast(t){var x=document.querySelector('.toast');if(x)x.remove();x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(function(){x.remove()},2600)}
+function b64enc(s){return btoa(unescape(encodeURIComponent(s)))}
+function b64dec(s){return decodeURIComponent(escape(atob(s.replace(/\s/g,''))))}
+function uid(){return 'v'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function fmtDate(iso){if(!iso)return '—';var d=new Date(iso);return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})+' в '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}
+
+$('login-sub').textContent=CFG.company+' · управление техникой в аренду';
+document.title='Кабинет владельца — '+CFG.company;
+
+/* ---------- GitHub ---------- */
+function gh(method,body){
+  return fetch(API+(method==='GET'?'?ref='+CFG.branch+'&t='+Date.now():''),{
+    method:method,cache:'no-store',
+    headers:{'Authorization':'Bearer '+S.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},
+    body:body?JSON.stringify(body):undefined
+  });
+}
+function fetchList(){
+  return gh('GET').then(function(r){
+    if(r.status===401)throw new Error('Ключ не подходит или устарел.');
+    if(r.status===403)throw new Error('У ключа нет доступа к репозиторию '+CFG.repo+'.');
+    if(r.status===404){S.sha=null;return {items:[],updated:null}}
+    if(!r.ok)throw new Error('GitHub ответил ошибкой '+r.status+'.');
+    return r.json().then(function(f){S.sha=f.sha;return JSON.parse(b64dec(f.content))});
+  });
+}
+function pushList(data){
+  var body={message:'Обновление техники в аренду',content:b64enc(JSON.stringify(data,null,2)+'\n'),branch:CFG.branch};
+  if(S.sha)body.sha=S.sha;
+  return gh('PUT',body).then(function(r){
+    if(r.status===409||r.status===422)throw new Error('conflict');
+    if(r.status===401)throw new Error('Ключ не подходит или устарел.');
+    if(r.status===403)throw new Error('У ключа нет права записи. Нужно разрешение Contents: Read and write.');
+    if(!r.ok)throw new Error('GitHub ответил ошибкой '+r.status+'.');
+    return r.json().then(function(j){S.sha=j.content.sha});
+  });
+}
+
+/* ---------- вход ---------- */
+function start(){
+  $('login').classList.add('hide');$('panel').classList.remove('hide');
+  $('p-title').innerHTML=esc(CFG.company)+'<small>'+(S.mode==='github'?'техника в аренду':'черновик без публикации')+'</small>';
+  $('open-site').href=CFG.site;
+  $('download').classList.toggle('hide',S.mode==='github');
+  $('publish').classList.toggle('hide',S.mode!=='github');
+  render();
+}
+function enter(token,remember){
+  $('login-err').textContent='';$('enter').disabled=true;$('enter').textContent='Проверяем…';
+  S.token=token;S.mode='github';
+  fetchList().then(function(d){
+    S.items=(d.items||[]).map(normalize);S.saved=JSON.stringify(S.items);S.updated=d.updated||null;
+    if(remember)store('owner_token',token);else{store('owner_token',null);try{sessionStorage.setItem('owner_token',token)}catch(e){}}
+    start();
+  }).catch(function(e){$('login-err').textContent=e.message||'Не удалось подключиться к GitHub.';S.token=''})
+  .finally(function(){$('enter').disabled=false;$('enter').textContent='Войти'});
+}
+$('enter').onclick=function(){var t=$('token').value.trim();if(!t){$('login-err').textContent='Вставьте ключ доступа.';return}enter(t,$('remember').checked)};
+$('token').addEventListener('keydown',function(e){if(e.key==='Enter')$('enter').click()});
+$('draft').onclick=function(){
+  S.mode='draft';
+  var local=load('owner_draft');
+  var go=function(items){S.items=items.map(normalize);S.saved=local?JSON.stringify(S.items):'[]';start()};
+  if(local){try{go(JSON.parse(local).items||[]);return}catch(e){}}
+  fetch('rent.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():{items:[]}}).then(function(d){go(d.items||[])}).catch(function(){go([])});
+};
+$('logout').onclick=function(){
+  if(dirty()&&!confirm('Есть несохранённые изменения. Выйти без сохранения?'))return;
+  store('owner_token',null);try{sessionStorage.removeItem('owner_token')}catch(e){}
+  location.reload();
+};
+(function(){var t=load('owner_token');try{t=t||sessionStorage.getItem('owner_token')}catch(e){}if(t)enter(t,!!load('owner_token'))})();
+
+/* ---------- список ---------- */
+function normalize(x){return {id:x.id||uid(),icon:TYPES[x.icon]?x.icon:'wrench',title:x.title||'',text:x.text||'',specs:x.specs||'',price:(x.price===''||x.price==null)?'':(isNaN(+x.price)?x.price:+x.price),unit:x.unit||'',status:x.status||'free'}}
+function dirty(){return JSON.stringify(S.items)!==S.saved}
+function setState(){
+  var st=$('state');st.className='state';
+  if(S.busy){st.textContent='Сохраняем…';return}
+  if(dirty()){st.classList.add('dirty');st.textContent='Есть несохранённые изменения';}
+  else{st.textContent=S.mode==='github'?'Всё сохранено':'Черновик сохранён на устройстве'}
+  $('publish').disabled=!dirty()||S.busy;
+}
+function render(){
+  $('info').innerHTML=S.mode==='github'?'На сайте: <b>'+(S.updated?fmtDate(S.updated):'ещё не публиковалось')+'</b>':'Черновик: изменения не попадут на сайт, пока вы не загрузите файл в репозиторий.';
+  var c={free:0,busy:0,repair:0};S.items.forEach(function(i){c[i.status]=(c[i.status]||0)+1});
+  $('summary').innerHTML='<span>Всего: '+S.items.length+'</span>'+STATUS.map(function(s){return '<span>'+s[1]+': '+(c[s[0]]||0)+'</span>'}).join('');
+  if(!S.items.length){$('list').innerHTML='<div class="empty">Техники пока нет. Нажмите «Добавить технику».</div>';setState();return}
+  $('list').innerHTML=S.items.map(function(it,i){
+    var priceVal=typeof it.price==='number'?it.price:'';
+    return '<div class="item'+(it._new?' new':'')+'" data-id="'+it.id+'">'+
+      '<div class="seg" role="group" aria-label="Статус">'+STATUS.map(function(s){return '<button type="button" class="'+s[0]+'" data-status="'+s[0]+'" aria-pressed="'+(it.status===s[0])+'">'+s[1]+'</button>'}).join('')+'</div>'+
+      '<div class="row two"><label>Название<input data-f="title" value="'+esc(it.title)+'" placeholder="Например: Трал 40 т"></label>'+
+      '<label>Тип<select data-f="icon">'+Object.keys(TYPES).map(function(k){return '<option value="'+k+'"'+(it.icon===k?' selected':'')+'>'+TYPES[k]+'</option>'}).join('')+'</select></label></div>'+
+      '<div class="row three"><label>Цена, ₽ (пусто — «по запросу»)<input data-f="price" type="number" inputmode="numeric" min="0" step="100" value="'+esc(priceVal)+'" placeholder="по запросу"></label>'+
+      '<label>За что<select data-f="unit"><option value="">—</option>'+UNITS.map(function(u){return '<option'+(it.unit===u?' selected':'')+'>'+u+'</option>'}).join('')+'</select></label>'+
+      '<label>Характеристики<input data-f="specs" value="'+esc(it.specs)+'" placeholder="Грузоподъёмность, длина…"></label></div>'+
+      '<label>Описание<textarea data-f="text" placeholder="Коротко, для клиентов">'+esc(it.text)+'</textarea></label>'+
+      '<div class="foot"><span class="num">№'+(i+1)+'</span><button type="button" class="btn danger sm" data-del>Удалить</button></div>'+
+    '</div>';
+  }).join('');
+  setState();
+}
+function itemOf(el){var box=el.closest('.item');return box?S.items.filter(function(x){return x.id===box.dataset.id})[0]:null}
+$('list').addEventListener('input',function(e){
+  var f=e.target.dataset.f,it=itemOf(e.target);if(!f||!it)return;
+  if(f==='price'){var v=e.target.value.trim();it.price=v===''?'':Math.max(0,Math.round(+v))}else it[f]=e.target.value;
+  if(S.mode==='draft')saveDraft();
+  setState();
+});
+$('list').addEventListener('click',function(e){
+  var it=itemOf(e.target);if(!it)return;
+  var sb=e.target.closest('[data-status]');
+  if(sb){it.status=sb.dataset.status;delete it._new;if(S.mode==='draft')saveDraft();render();return}
+  if(e.target.closest('[data-del]')){
+    if(!confirm('Удалить «'+(it.title||'без названия')+'»?'))return;
+    S.items=S.items.filter(function(x){return x!==it});if(S.mode==='draft')saveDraft();render();
+  }
+});
+$('add').onclick=function(){
+  var it=normalize({});it._new=true;S.items.unshift(it);render();
+  var inp=document.querySelector('.item[data-id="'+it.id+'"] [data-f="title"]');if(inp)inp.focus();
+};
+function clean(){return S.items.map(function(x){return {id:x.id,icon:x.icon,title:x.title.trim(),text:x.text.trim(),specs:x.specs.trim(),price:x.price,unit:x.price===''?'':x.unit,status:x.status}})}
+function saveDraft(){store('owner_draft',JSON.stringify({items:clean()}))}
+
+$('publish').onclick=function(){
+  var bad=S.items.filter(function(x){return !x.title.trim()});
+  if(bad.length){toast('У каждой техники должно быть название.');return}
+  S.busy=true;setState();
+  var data={updated:new Date().toISOString(),items:clean()};
+  pushList(data).catch(function(e){
+    if(e.message!=='conflict')throw e;
+    // someone saved in between: take the fresh sha and save again
+    return fetchList().then(function(){return pushList(data)});
+  }).then(function(){
+    S.items.forEach(function(x){delete x._new});
+    S.saved=JSON.stringify(S.items);S.updated=data.updated;S.busy=false;render();
+    toast('Сохранено. На сайте обновится примерно через минуту.');
+  }).catch(function(e){S.busy=false;setState();$('state').className='state bad';$('state').textContent=e.message||'Не удалось сохранить.'});
+};
+$('download').onclick=function(){
+  var blob=new Blob([JSON.stringify({updated:new Date().toISOString(),items:clean()},null,2)+'\n'],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rent.json';document.body.appendChild(a);a.click();a.remove();
+  S.saved=JSON.stringify(S.items);setState();
+};
+window.addEventListener('beforeunload',function(e){if(dirty()&&S.mode==='github'){e.preventDefault();e.returnValue=''}});
+</script>
+</body>
+</html>
